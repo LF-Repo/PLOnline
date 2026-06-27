@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLOnline - Oplus MediaTek FastBoot Unlock | Android11 ~ 14</title>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --card: #161b22;
+            --border: #30363d;
+            --text: #c9d1d9;
+            --text-muted: #8b949e;
+            --heading: #f0f6fc;
+            --accent: #58a6ff;
+            --green: #238636;
+            --green-hover: #2ea043;
+            --red: #da3633;
+            --yellow: #d2991d;
+            --radius: 6px;
+            --font-mono: 'SF Mono', 'Cascadia Code', 'Consolas', 'Monaco', 'Menlo', monospace;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-sans);
+            font-size: 14px;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 40px 16px;
+        }
+        .container { width: 100%; max-width: 680px; }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        .title-group { display: flex; align-items: center; gap: 10px; }
+        .title-group h1 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--heading);
+            letter-spacing: -0.2px;
+        }
+        .badge {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 3px 8px;
+            border-radius: 20px;
+            background: #1a2332;
+            color: var(--accent);
+            border: 1px solid #1f3a5f;
+            white-space: nowrap;
+            font-family: var(--font-mono);
+        }
+        .lang-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 5px 12px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: background 0.2s, color 0.2s;
+            font-family: var(--font-sans);
+        }
+        .lang-btn:hover { background: #21262d; color: var(--text); }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 14px;
+        }
+        .card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--heading);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .dot.green { background: #3fb950; }
+        .dot.yellow { background: var(--yellow); }
+        .dot.red { background: var(--red); }
+        .dot.gray { background: #484f58; }
+
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            background: transparent;
+        }
+        .upload-zone:hover, .upload-zone.drag-over {
+            border-color: var(--accent);
+            background: #0d1b2a;
+        }
+        .upload-zone p { color: var(--text-muted); font-size: 13px; }
+        .upload-zone .filename {
+            color: var(--heading);
+            font-weight: 600;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            margin-top: 6px;
+            word-break: break-all;
+        }
+        .upload-zone input { display: none; }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 7px 0;
+            border-bottom: 1px solid #21262d;
+            font-size: 13px;
+        }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { color: var(--text-muted); flex-shrink: 0; margin-right: 12px; }
+        .info-value {
+            color: var(--heading);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            text-align: right;
+            word-break: break-all;
+        }
+        .info-value.warn { color: var(--yellow); }
+        .info-value.err { color: var(--red); }
+        .info-value.ok { color: #3fb950; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 7px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: var(--radius);
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: #21262d;
+            color: var(--text);
+            transition: background 0.15s, border-color 0.15s;
+            font-family: var(--font-sans);
+            white-space: nowrap;
+        }
+        .btn:hover { background: #30363d; border-color: #484f58; }
+        .btn.primary { background: var(--green); border-color: var(--green); color: #fff; font-weight: 600; }
+        .btn.primary:hover { background: var(--green-hover); border-color: var(--green-hover); }
+        .btn:disabled { opacity: 0.4; pointer-events: none; }
+        .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+
+        .log {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            background: #0a0e13;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px;
+            max-height: 260px;
+            overflow-y: auto;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-break: break-all;
+            color: var(--text-muted);
+        }
+        .log .hl { color: var(--accent); }
+        .log .ok { color: #3fb950; }
+        .log .warn { color: var(--yellow); }
+        .log .err { color: var(--red); }
+
+        .toast {
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+            background: #1a2332; border: 1px solid var(--border); color: var(--heading);
+            padding: 10px 20px; border-radius: 20px; font-size: 13px; font-weight: 500;
+            z-index: 99; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        .toast.show { opacity: 1; pointer-events: auto; }
+
+        @media (max-width: 500px) {
+            .container { max-width: 100%; }
+            .card { padding: 14px; }
+            .info-row { flex-direction: column; align-items: flex-start; gap: 2px; padding: 6px 0; }
+            .info-value { text-align: left; }
+            .btn-row { flex-direction: column; }
+            .btn { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title-group">
+                <h1 id="mainTitle">PLOnline</h1>
+                <span class="badge">MediaTek FastBoot Unlock</span>
+            </div>
+            <button class="lang-btn" id="langToggle">EN</button>
+        </div>
+
+        <div class="card" id="uploadCard">
+            <div class="card-title"><span class="dot gray"></span> <span id="uploadTitle">Select Preloader File</span></div>
+            <div class="upload-zone" id="uploadZone">
+                <p id="dropText">Drop file here or click to select</p>
+                <p style="font-size:11px;margin-top:4px;color:#484f58;" id="hintText">Supports .bin files (usually boot1.bin)</p>
+                <div class="filename" id="uploadFilename"></div>
+                <input type="file" id="fileInput" accept=".bin,.img,.rom,.bin*">
+            </div>
+        </div>
+
+        <div class="card" id="analysisCard" style="display:none;">
+            <div class="card-title"><span class="dot yellow" id="statusDot"></span> <span id="analysisTitle">File Analysis</span></div>
+            <div id="infoRows"></div>
+            <div class="btn-row" id="actionBtns"></div>
+        </div>
+
+        <div class="card" id="logCard" style="display:none;">
+            <div class="card-title"><span class="dot gray"></span> <span id="logTitle">Operation Log</span></div>
+            <div class="log" id="logContent"></div>
+        </div>
+
+        <div class="toast" id="toast"></div>
+    </div>
+
+    <script>
+        (function() {
+            // ---------- i18n ----------
+            const i18n = {
+                en: {
+                    mainTitle: 'PLOnline',
+                    uploadTitle: 'Select Preloader File',
+                    dropText: 'Drop file here or click to select',
+                    hintText: 'Supports .bin files (usually boot1.bin)',
+                    analysisTitle: 'File Analysis',
+                    logTitle: 'Operation Log',
+                    applyBtn: 'Apply & Download',
+                    resetBtn: 'Reset',
+                    cantApply: 'Cannot Apply',
+                    toastDownload: 'File downloaded: ',
+                    toastError: 'Modification failed',
+                    fileLoaded: 'File loaded: ',
+                    fileSizeLabel: 'File Size',
+                    memoryTypeLabel: 'Memory Type',
+                    codeOffsetLabel: 'Code Offset',
+                    flagBlockLabel: 'Flag Block',
+                    lockStateLabel: 'Fastboot Lock State',
+                    codeMovableLabel: 'Code Movable',
+                    found: 'Found',
+                    notFound: 'Not found',
+                    offset: 'offset',
+                    ok: 'OK',
+                    error: 'Error',
+                    warning: 'Warning',
+                    rawError: 'RAW preloader lacks offset header, cannot process.',
+                    unknownTypeWarning: 'Unknown memory type signature, result may be unpredictable.',
+                    sizeWarning: 'File size abnormal: ',
+                    normalSizeNote: ' (standard: 0x400000)',
+                    logWaiting: 'Waiting for file upload...',
+                    logModStart: 'Starting modifications...',
+                    logCodeOffset: 'Code offset',
+                    logZeroRange: 'Zero fill range',
+                    logRawDataRange: 'Original code data',
+                    logBrlytHeader: '--- Modifying BRLYT offsets ---',
+                    logFlagWrite: 'Flag block written to 0x1000',
+                    logFlagSkip: 'Flag block not found, skip writing',
+                    logUnlock: 'Fastboot unlock: 0x104C -> 0x00',
+                    logSuccess: 'Modification successful! Preparing download...',
+                    logFail: 'Modification failed: ',
+                    logReady: 'Ready - click "Apply & Download" to continue',
+                    logCannot: 'Cannot continue - check errors above',
+                    logBytes: 'bytes',
+                    logSep: '═══════════════════════════════',
+                },
+                zh: {
+                    mainTitle: 'PLOnline',
+                    uploadTitle: '选择 Preloader 文件',
+                    dropText: '拖放文件到此处 或 点击选择',
+                    hintText: '支持 .bin 文件 (通常为 boot1.bin)',
+                    analysisTitle: '文件分析',
+                    logTitle: '操作日志',
+                    applyBtn: '应用修改并下载',
+                    resetBtn: '重新选择',
+                    cantApply: '无法应用',
+                    toastDownload: '文件已下载: ',
+                    toastError: '修改过程出错',
+                    fileLoaded: '文件加载完成: ',
+                    fileSizeLabel: '文件大小',
+                    memoryTypeLabel: '内存类型',
+                    codeOffsetLabel: '代码偏移量',
+                    flagBlockLabel: '标志块',
+                    lockStateLabel: 'Fastboot 锁定状态',
+                    codeMovableLabel: '代码可移动性',
+                    found: '已找到',
+                    notFound: '未找到',
+                    offset: '偏移',
+                    ok: '正常',
+                    error: '错误',
+                    warning: '警告',
+                    rawError: 'RAW 格式 preloader 缺少偏移头，无法处理。',
+                    unknownTypeWarning: '未识别的内存类型签名，结果可能不可预测。',
+                    sizeWarning: '文件大小异常: ',
+                    normalSizeNote: ' (标准: 0x400000)',
+                    logWaiting: '等待文件上传...',
+                    logModStart: '开始应用修改...',
+                    logCodeOffset: '代码偏移量',
+                    logZeroRange: '零填充范围',
+                    logRawDataRange: '原始代码数据',
+                    logBrlytHeader: '--- 修改 BRLYT 偏移量 ---',
+                    logFlagWrite: '标志块已写入 0x1000',
+                    logFlagSkip: '未找到标志块，跳过写入',
+                    logUnlock: 'Fastboot 解锁: 0x104C -> 0x00',
+                    logSuccess: '修改成功！准备下载...',
+                    logFail: '修改失败: ',
+                    logReady: '就绪 - 点击"应用修改并下载"继续',
+                    logCannot: '无法继续 - 请检查上述错误',
+                    logBytes: '字节',
+                    logSep: '═══════════════════════════════',
+                }
+            };
+
+            let currentLang = 'en';
+
+            function t(key) {
+                return i18n[currentLang][key] || key;
+            }
+
+            // ---------- DOM refs ----------
+            const uploadZone = document.getElementById('uploadZone');
+            const fileInput = document.getElementById('fileInput');
+            const uploadFilename = document.getElementById('uploadFilename');
+            const analysisCard = document.getElementById('analysisCard');
+            const infoRows = document.getElementById('infoRows');
+            const actionBtns = document.getElementById('actionBtns');
+            const logCard = document.getElementById('logCard');
+            const logContent = document.getElementById('logContent');
+            const statusDot = document.getElementById('statusDot');
+            const toast = document.getElementById('toast');
+            const langToggle = document.getElementById('langToggle');
+
+            // Static text elements
+            const mainTitleEl = document.getElementById('mainTitle');
+            const uploadTitleEl = document.getElementById('uploadTitle');
+            const dropTextEl = document.getElementById('dropText');
+            const hintTextEl = document.getElementById('hintText');
+            const analysisTitleEl = document.getElementById('analysisTitle');
+            const logTitleEl = document.getElementById('logTitle');
+
+            // ---------- State ----------
+            let originalBuffer = null;
+            let originalFileName = '';
+            let analysisResult = null;
+
+            const NORMAL_SIZE = 4 * 1024 * 1024;
+            const FLAG_PATTERN = new Uint8Array([0x41, 0x4E, 0x44, 0x5F, 0x52, 0x4F, 0x4D, 0x49, 0x4E, 0x46, 0x4F, 0x5F, 0x76]);
+            const RAW_MAGIC = new Uint8Array([0x4D, 0x4D, 0x4D, 0x01, 0x38, 0x00, 0x00, 0x00, 0x46, 0x49, 0x4C, 0x45, 0x5F, 0x49, 0x4E, 0x46]);
+
+            // ---------- Utilities ----------
+            let toastTimer;
+            function showToast(msg) {
+                toast.textContent = msg;
+                toast.classList.add('show');
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+            }
+
+            function appendLog(text, cls = '') {
+                const span = document.createElement('span');
+                span.textContent = text;
+                if (cls) span.className = cls;
+                logContent.appendChild(span);
+                logContent.appendChild(document.createTextNode('\n'));
+                logContent.scrollTop = logContent.scrollHeight;
+            }
+
+            function clearLog() { logContent.innerHTML = ''; }
+
+            function findPattern(haystack, needle) {
+                const hLen = haystack.length, nLen = needle.length;
+                if (nLen === 0 || hLen < nLen) return -1;
+                const first = needle[0], maxStart = hLen - nLen;
+                for (let i = 0; i <= maxStart; i++) {
+                    if (haystack[i] === first) {
+                        let match = true;
+                        for (let j = 1; j < nLen; j++) if (haystack[i + j] !== needle[j]) { match = false; break; }
+                        if (match) return i;
+                    }
+                }
+                return -1;
+            }
+
+            function checkMagic(data) {
+                const magic = data.slice(0, 16);
+                let isRaw = true;
+                for (let i = 0; i < 16; i++) if (magic[i] !== RAW_MAGIC[i]) { isRaw = false; break; }
+                if (isRaw) return { type: 'RAW', isRaw: true, label: 'RAW' };
+                const ufs = String.fromCharCode(...magic.slice(0, 8));
+                if (ufs.startsWith('UFS_BOOT')) return { type: 'UFS_BOOT', isRaw: false, label: 'UFS_BOOT' };
+                if (ufs.startsWith('EMMC_BOOT')) return { type: 'EMMC_BOOT', isRaw: false, label: 'EMMC_BOOT' };
+                if (ufs.startsWith('COMBO_BOOT')) return { type: 'COMBO_BOOT', isRaw: false, label: 'COMBO_BOOT (UFS)' };
+                return { type: 'UNKNOWN', isRaw: false, label: 'Unknown' };
+            }
+
+            function analyzeFile(buffer, fileName) {
+                const data = new Uint8Array(buffer);
+                const fileSize = data.length;
+                const warnings = [], errors = [];
+
+                if (fileSize !== NORMAL_SIZE) {
+                    warnings.push(t('sizeWarning') + '0x' + fileSize.toString(16).toUpperCase() + t('normalSizeNote'));
+                }
+
+                const magicResult = checkMagic(data);
+                if (magicResult.isRaw) errors.push(t('rawError'));
+                if (magicResult.type === 'UNKNOWN') warnings.push(t('unknownTypeWarning'));
+
+                const codeOffsetHigh = data[0x20d] || 0;
+                const codeOffset = codeOffsetHigh * 256;
+                const codeOffsetHex = '0x' + codeOffset.toString(16).toUpperCase();
+                const off21d = data[0x21d], off211 = data[0x211], off212 = data[0x212], off221 = data[0x221], off222 = data[0x222];
+
+                const flagPos = findPattern(data, FLAG_PATTERN);
+                let flagFound = false, lockStateHex = 'N/A', lockStateLabel = 'N/A', flagBlockOffset = -1, flagData = null;
+                if (flagPos !== -1) {
+                    flagFound = true;
+                    flagBlockOffset = flagPos;
+                    flagData = data.slice(flagPos, flagPos + 0x78);
+                    const lockByte = data[flagPos + 0x4C];
+                    lockStateHex = '0x' + lockByte.toString(16).toUpperCase().padStart(2, '0');
+                    if (lockByte === 0x22) lockStateLabel = '22 (lock)';
+                    else if (lockByte === 0x11) lockStateLabel = '11 (hard lock)';
+                    else lockStateLabel = `${lockByte.toString(16)} (unlock)`;
+                }
+
+                const canMoveCode = (0x2000 - codeOffset) >= 0;
+                if (!canMoveCode && !magicResult.isRaw) errors.push('Code offset too large, cannot move to 0x2000.');
+
+                const canProceed = errors.length === 0;
+                return {
+                    valid: canProceed, memoryType: magicResult.label, isRaw: magicResult.isRaw,
+                    fileSize, fileSizeHex: '0x' + fileSize.toString(16).toUpperCase(),
+                    codeOffset, codeOffsetHex, off21d, off211, off212, off221, off222,
+                    flagFound, flagBlockOffset, lockStateHex, lockStateLabel, flagData,
+                    warnings, errors, canProceed, canMoveCode,
+                };
+            }
+
+            function applyModifications(buffer, analysis) {
+                const fileSize = analysis.fileSize;
+                const data = new Uint8Array(buffer);
+                const modified = new Uint8Array(data);
+                const dataRawEnd = fileSize - 0x3000;
+                const dataRaw = modified.slice(analysis.codeOffset, dataRawEnd);
+                modified.fill(0, analysis.codeOffset, fileSize);
+                modified.set(dataRaw, 0x2000);
+                modified[0x20D] = 0x20; modified[0x21D] = 0x20;
+                modified[0x211] = 0x10; modified[0x212] = 0x10;
+                modified[0x221] = 0x10; modified[0x222] = 0x10;
+                if (analysis.flagData && analysis.flagData.length > 0) modified.set(analysis.flagData, 0x1000);
+                modified[0x104C] = 0x00;
+                return modified.buffer;
+            }
+
+            function renderAnalysis(analysis) {
+                infoRows.innerHTML = '';
+                const rows = [
+                    [t('fileSizeLabel'), analysis.fileSizeHex + ` (${(analysis.fileSize/1024).toFixed(0)} KB)`, analysis.fileSize === NORMAL_SIZE ? 'ok' : 'warn'],
+                    [t('memoryTypeLabel'), analysis.memoryType, analysis.isRaw ? 'err' : (analysis.memoryType.includes('Unknown') ? 'warn' : 'ok')],
+                    [t('codeOffsetLabel'), analysis.codeOffsetHex + ` (0x20D: 0x${(analysis.codeOffset/256).toString(16).toUpperCase().padStart(2,'0')})`, ''],
+                    [t('flagBlockLabel'), analysis.flagFound ? `${t('found')} (${t('offset')}: 0x${analysis.flagBlockOffset.toString(16).toUpperCase()})` : t('notFound'), analysis.flagFound ? 'ok' : 'warn'],
+                    [t('lockStateLabel'), analysis.lockStateLabel, analysis.lockStateHex === '0x00' ? 'ok' : 'warn'],
+                    [t('codeMovableLabel'), analysis.canMoveCode ? 'Can move to 0x2000' : 'Cannot move', analysis.canMoveCode ? 'ok' : 'err'],
+                ];
+                rows.forEach(([label, value, cls]) => {
+                    const div = document.createElement('div'); div.className = 'info-row';
+                    div.innerHTML = `<span class="info-label">${label}</span><span class="info-value${cls?' '+cls:''}">${value}</span>`;
+                    infoRows.appendChild(div);
+                });
+                [...analysis.errors.map(e=>({msg:e,cls:'err'})), ...analysis.warnings.map(w=>({msg:w,cls:'warn'}))].forEach(({msg,cls})=>{
+                    const div = document.createElement('div'); div.className = 'info-row';
+                    div.innerHTML = `<span class="info-label">${cls==='err'?t('error'):t('warning')}</span><span class="info-value ${cls}">${msg}</span>`;
+                    infoRows.appendChild(div);
+                });
+                statusDot.className = 'dot ' + (analysis.errors.length ? 'red' : (analysis.warnings.length ? 'yellow' : 'green'));
+                actionBtns.innerHTML = '';
+                if (analysis.canProceed) {
+                    const applyBtn = document.createElement('button'); applyBtn.className = 'btn primary';
+                    applyBtn.textContent = t('applyBtn');
+                    applyBtn.addEventListener('click', () => executeModifications(analysis));
+                    actionBtns.appendChild(applyBtn);
+                } else {
+                    const disabledBtn = document.createElement('button'); disabledBtn.className = 'btn primary'; disabledBtn.disabled = true;
+                    disabledBtn.textContent = t('cantApply'); actionBtns.appendChild(disabledBtn);
+                }
+                const resetBtn = document.createElement('button'); resetBtn.className = 'btn';
+                resetBtn.textContent = t('resetBtn'); resetBtn.addEventListener('click', resetAll);
+                actionBtns.appendChild(resetBtn);
+                analysisCard.style.display = 'block';
+            }
+
+            function executeModifications(analysis) {
+                clearLog();
+                logCard.style.display = 'block';
+                appendLog(t('logSep'), 'hl');
+                appendLog(t('logModStart'), 'hl');
+                appendLog('');
+                appendLog(`${t('logCodeOffset')}: ${analysis.codeOffsetHex} -> 0x2000`, '');
+                appendLog(`${t('logZeroRange')}: ${analysis.codeOffsetHex} -> EOF`, '');
+                appendLog(`${t('logRawDataRange')}: ${analysis.codeOffsetHex} -> 0x${(analysis.fileSize-0x3000).toString(16).toUpperCase()}`, '');
+                appendLog('');
+                appendLog(t('logBrlytHeader'), 'hl');
+                appendLog(`0x20D: 0x${(analysis.codeOffset/256).toString(16).toUpperCase().padStart(2,'0')} -> 0x20`, '');
+                appendLog(`0x21D: 0x${analysis.off21d.toString(16).toUpperCase().padStart(2,'0')} -> 0x20`, '');
+                appendLog(`0x211: 0x${analysis.off211.toString(16).toUpperCase().padStart(2,'0')} -> 0x10`, '');
+                appendLog(`0x212: 0x${analysis.off212.toString(16).toUpperCase().padStart(2,'0')} -> 0x10`, '');
+                appendLog(`0x221: 0x${analysis.off221.toString(16).toUpperCase().padStart(2,'0')} -> 0x10`, '');
+                appendLog(`0x222: 0x${analysis.off222.toString(16).toUpperCase().padStart(2,'0')} -> 0x10`, '');
+                appendLog('');
+                if (analysis.flagData && analysis.flagData.length > 0) appendLog(t('logFlagWrite') + ` (${analysis.flagData.length} ${t('logBytes')})`, 'ok');
+                else appendLog(t('logFlagSkip'), 'warn');
+                appendLog(t('logUnlock') + ` (${analysis.lockStateHex})`, 'ok');
+                appendLog('');
+                try {
+                    const newBuffer = applyModifications(originalBuffer, analysis);
+                    appendLog(t('logSuccess'), 'ok');
+                    appendLog(t('logSep'), 'hl');
+                    const blob = new Blob([newBuffer], { type: 'application/octet-stream' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a'); a.href = url; a.download = originalFileName;
+                    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    showToast(t('toastDownload') + originalFileName);
+                } catch (err) {
+                    appendLog(t('logFail') + err.message, 'err');
+                    showToast(t('toastError'));
+                }
+            }
+
+            function resetAll() {
+                originalBuffer = null; originalFileName = ''; analysisResult = null;
+                analysisCard.style.display = 'none'; logCard.style.display = 'none';
+                infoRows.innerHTML = ''; actionBtns.innerHTML = '';
+                clearLog(); uploadFilename.textContent = ''; fileInput.value = '';
+                statusDot.className = 'dot gray';
+            }
+
+            function handleFile(file) {
+                if (!file) return;
+                originalFileName = file.name;
+                uploadFilename.textContent = file.name;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    originalBuffer = e.target.result;
+                    const analysis = analyzeFile(originalBuffer, file.name);
+                    analysisResult = analysis;
+                    renderAnalysis(analysis);
+                    clearLog();
+                    logCard.style.display = 'block';
+                    appendLog(t('fileLoaded') + file.name, 'ok');
+                    appendLog(`${t('fileSizeLabel')}: ${analysis.fileSizeHex}`, '');
+                    appendLog(`${t('memoryTypeLabel')}: ${analysis.memoryType}`, '');
+                    if (analysis.flagFound) appendLog(`${t('flagBlockLabel')}: ${t('found')}, ${t('lockStateLabel')}: ${analysis.lockStateLabel}`, 'ok');
+                    else appendLog(`${t('flagBlockLabel')}: ${t('notFound')}`, 'warn');
+                    analysis.warnings.forEach(w => appendLog(`[${t('warning')}] ${w}`, 'warn'));
+                    analysis.errors.forEach(e => appendLog(`[${t('error')}] ${e}`, 'err'));
+                    if (analysis.canProceed) appendLog(t('logReady'), 'hl');
+                    else appendLog(t('logCannot'), 'err');
+                };
+                reader.readAsArrayBuffer(file);
+            }
+
+            // ---------- Language switching ----------
+            function updateUILanguage() {
+                mainTitleEl.textContent = t('mainTitle');
+                uploadTitleEl.textContent = t('uploadTitle');
+                dropTextEl.textContent = t('dropText');
+                hintTextEl.textContent = t('hintText');
+                analysisTitleEl.textContent = t('analysisTitle');
+                logTitleEl.textContent = t('logTitle');
+                langToggle.textContent = currentLang === 'en' ? '中' : 'EN';
+                // If analysis rendered, re-render to update labels
+                if (analysisResult && analysisCard.style.display !== 'none') {
+                    renderAnalysis(analysisResult);
+                }
+            }
+
+            langToggle.addEventListener('click', () => {
+                currentLang = currentLang === 'en' ? 'zh' : 'en';
+                updateUILanguage();
+                // Update log waiting message if log is showing default
+                if (logCard.style.display !== 'none' && logContent.childNodes.length === 0) {
+                    clearLog(); appendLog(t('logWaiting'), '');
+                }
+            });
+
+            // ---------- Event listeners ----------
+            uploadZone.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', (e) => { if (e.target.files[0]) handleFile(e.target.files[0]); });
+            uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+            uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+            uploadZone.addEventListener('drop', (e) => {
+                e.preventDefault(); uploadZone.classList.remove('drag-over');
+                if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+            });
+
+            // Initialize UI
+            updateUILanguage();
+            clearLog();
+            appendLog(t('logWaiting'), '');
+            logCard.style.display = 'block';
+        })();
+    </script>
+</body>
+</html>
