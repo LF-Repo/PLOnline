@@ -1,2 +1,5 @@
 # PLOnline
-Modifying the factory preloader and writing the preloader via mtkclient to open access to fastboot and unlock the bootloader(Online Patcher)
+web version of the original Python implementation.
+
+[Exe implementation](https://github.com/LF-Repo/PLPatcher)
+[Original Python repository](https://github.com/Shocked-Cat/oppo-mtk-fastboot-unlock)
