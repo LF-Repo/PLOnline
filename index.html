@@ -409,15 +409,18 @@
             }
 
             function checkMagic(data) {
-                const magic = data.slice(0, 16);
+                const magic = new Uint8Array(data.slice(0, 16));
+                const magichex = Array.from(magic)
+                    .map(b => b.toString(16).padStart(2, '0'))
+                    .join(' ');
                 let isRaw = true;
                 for (let i = 0; i < 16; i++) if (magic[i] !== RAW_MAGIC[i]) { isRaw = false; break; }
                 if (isRaw) return { type: 'RAW', isRaw: true, label: 'RAW' };
-                const ufs = String.fromCharCode(...magic.slice(0, 8));
-                if (ufs.startsWith('UFS_BOOT')) return { type: 'UFS_BOOT', isRaw: false, label: 'UFS_BOOT' };
-                if (ufs.startsWith('EMMC_BOOT')) return { type: 'EMMC_BOOT', isRaw: false, label: 'EMMC_BOOT' };
-                if (ufs.startsWith('COMBO_BOOT')) return { type: 'COMBO_BOOT', isRaw: false, label: 'COMBO_BOOT (UFS)' };
-                return { type: 'UNKNOWN', isRaw: false, label: 'Unknown' };
+                const type_memory = String.fromCharCode(...magic.slice(0, 16));
+                if (type_memory.startsWith('UFS_BOOT')) return { type: 'UFS_BOOT', isRaw: false, label: 'UFS_BOOT' };
+                if (type_memory.startsWith('EMMC_BOOT')) return { type: 'EMMC_BOOT', isRaw: false, label: 'EMMC_BOOT' };
+                if (type_memory.startsWith('COMBO_BOOT')) return { type: 'COMBO_BOOT', isRaw: false, label: 'COMBO_BOOT (UFS)' };
+                return { type: 'UNKNOWN', isRaw: false, label: Unknown: (${magichex}) };
             }
 
             function analyzeFile(buffer, fileName) {
