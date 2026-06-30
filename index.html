@@ -420,7 +420,7 @@
                 if (type_memory.startsWith('UFS_BOOT')) return { type: 'UFS_BOOT', isRaw: false, label: 'UFS_BOOT' };
                 if (type_memory.startsWith('EMMC_BOOT')) return { type: 'EMMC_BOOT', isRaw: false, label: 'EMMC_BOOT' };
                 if (type_memory.startsWith('COMBO_BOOT')) return { type: 'COMBO_BOOT', isRaw: false, label: 'COMBO_BOOT (UFS)' };
-                return { type: 'UNKNOWN', isRaw: false, label: Unknown: (${magichex}) };
+                return { type: 'UNKNOWN', isRaw: false, label: `Unknown: (${magichex})` };
             }
 
             function analyzeFile(buffer, fileName) {
